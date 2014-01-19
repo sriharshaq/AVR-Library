@@ -1,0 +1,9 @@
+Atmega16 & LCD (16x2) LCD Connections
+
+EN (Enable)            : PORTC.4
+RS (Register Select)   : PORTC.5
+D4 (Data Bit 4)        : PORTC.0
+D5 (Data Bit 5)        : PORTC.1
+D6 (Data Bit 6)        : PORTC.2
+D7 (Data Bit 7)        : PORTC.3
+
