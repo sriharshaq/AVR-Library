@@ -1,43 +1,66 @@
+/***************************************************************************************************************
+    This file is part of Library for AVR.
+
+    Library for AVR is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Library for AVR is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Library for AVR.  If not, see <http://www.gnu.org/licenses/>.
+/**************************************************************************************************************/
+
+/***
+**   File       : uart.c
+**   Author     : Sriharsha
+**   Website    : www.zuna.in
+**   Email      : helpzuna@gmail.com
+**   Description: This is the uart driver for AVR family MCU's
+***/
+
 #include "uart.h"
 
-#ifdef ENABLE_UART_RX_INTERRUT
-volatile unsigned char uartNewLineFlag = 0;
-volatile unsigned char uartReadBuffer[RECV_BUFFER_SIZE];
-volatile unsigned int  uartReadCount = 0;
-volatile unsigned char uartNewLineCount = 0;
-volatile unsigned char uartNewLineCountMax = 0;
-volatile unsigned char uartNewLineIndexes[MAX_NL_INDEX];
-volatile unsigned char uartLfCr = 0;
+// Globals
+
+// Oscillator Frequency (Default 1MHz)
+unsigned long OscillatorFrequency = 1000000;
+
+
+#ifdef SERIAL_RX_INTERRUPT_ENABLE
+
+// Uart New Line Flag (Set when new line received)
+ volatile unsigned char uartNewLineFlag = 0;
+// UART Read Buffer to store Received Data
+ volatile unsigned char uartReadBuffer[UART_RX_BUFFER_SIZE];
+// Uart Byte Count
+ volatile unsigned int  uartReadCount    = 0;
+// Uart New Line Count
+ volatile unsigned char uartNewLineCount = 0;
+// It holds every new line index
+ volatile unsigned char uartNewLineIndexes[NEW_LINE_INDEX_BUFFER_SIZE];
+
 #endif
 
-unsigned long OscillatorFrequency = 1000000;
-/********************************************************************
-*
-*	Function	:	SetOsc
-*
-*	Description	:	Sets the Oscillator Frequency
-*
-*	Input       :	unsigned long
-*
-*	Returnvalue	:	none
-*
-*********************************************************************/
+/*** Function    : SetOsc
+**   Parameters  : unsigned long (Oscillator Frequency in Hz)
+**   Return      : None
+**   Description : It will Set the Oscillator Frequency for Baud Rate Calculations
+**/
 void SetOsc(unsigned long OscFreq)
 {
 	OscillatorFrequency = OscFreq;
 }
 
-/********************************************************************
-*
-*	Function	:	Serialbegin
-*
-*	Description	:	Initilizes UART (8 bit,no parity,1 stop)
-*
-*	Input       :	unsigned long ( baud rate)
-*
-*	Returnvalue	:	none
-*
-*********************************************************************/
+/*** Function    : Serialbegin
+**   Parameters  : unsigned long (Standard BaudRate)
+**   Return      : None
+**   Description : It will Set the baud rate for serial communication
+**/
 void Serialbegin(unsigned long baudRate)
 {
 	unsigned long autoReloadvalue = (((OscillatorFrequency / (baudRate * 16))) - 1);
@@ -47,17 +70,11 @@ void Serialbegin(unsigned long baudRate)
     UCSRC = (1 << URSEL) | (1 << UCSZ0) | (1 << UCSZ1); 
 }
 
-/********************************************************************
-*
-*	Function	:	Serialavailable
-*
-*	Description	:	Returns weather RI flag set or not
-*
-*	Input       :	none
-*
-*	Returnvalue	:	__bit RI flag
-*
-*********************************************************************/
+/*** Function    : Serialavailable
+**   Parameters  : None
+**   Return      : __bit (If byte is available in receive buffer returns 1, else returns 0)
+**   Description : It will give the whether Receiver is available or not
+**/
 unsigned char Serialavailable(void)
 {
 	if((UCSRA &(1<<RXC)) == 1)
@@ -67,17 +84,11 @@ unsigned char Serialavailable(void)
 }
 
 
-/********************************************************************
-*
-*	Function	:	Serialwrite
-*
-*	Description	:	Sends single byte to uart
-*
-*	Input       :	unsigned char(Byte)
-*
-*	Returnvalue	:	none
-*
-*********************************************************************/
+/*** Function    : Serialwrite
+**   Parameters  : unsigned char (Single character that will send to UART)
+**   Return      : None
+**   Description : It will write single character to UART
+**/
 void Serialwrite(unsigned char Byte)
 {
  while((UCSRA &(1<<UDRE)) == 0);
@@ -85,77 +96,73 @@ void Serialwrite(unsigned char Byte)
  UDR = Byte;
 }
 
-/********************************************************************
-*
-*	Function	:	Serialread
-*
-*	Description	:	Receives single byte from uart
-*
-*	Input       :	none
-*
-*	Returnvalue	:	unsigned char(Byte)
-*
-*********************************************************************/
+/*** Function    : Serialread
+**   Parameters  : None
+**   Return      : unsigned char
+**   Description : It will read single byte from uart
+**/
 volatile unsigned char Serialread(void)
 {
 	 while((UCSRA &(1<<RXC)) == 0);
 	 return UDR;
 }
 
-/********************************************************************
-*
-*	Function	:	Serialprint
-*
-*	Description	:	Sends string to uart
-*
-*	Input       :	unsigned char*
-*
-*	Returnvalue	:	none
-*
-*********************************************************************/
+/*** Function    : Serialprint
+**   Parameters  : unsigned char *
+**   Return      : None
+**   Description : It will send the string to UART
+**/
 void Serialprint(unsigned char *sPtr)
 {
 	for(;*sPtr!='\0';Serialwrite(*(sPtr++)));
 }
 
 
-/********************************************************************
-*
-*	Function	:	SerialIntWrite
-*
-*	Description	:	Sends integer to uart
-*
-*	Input       :	unsigned char
-*
-*	Returnvalue	:	none
-*
-*********************************************************************/
-void SerialIntWrite(unsigned char num)
+/*** Function    : SerialIntWrite
+**   Parameters  : unsigned char *
+**   Return      : None
+**   Description : It will send the string to UART
+**/
+void SerialIntWrite(signed int num)
 {
-	unsigned char Div = 10;
-	Serialwrite((num / Div)+48);
-	Serialwrite((num % Div)+48);
+char *tempBuffer;
+sprintf(tempBuffer,"%d",num);
+Serialprint((unsigned char*)tempBuffer);
 }
 
-#ifdef ENABLE_UART_RX_INTERRUT
+#ifdef SERIAL_RX_INTERRUPT_ENABLE
+
+/*** Function    : setSerialinterrupt
+**   Parameters  : None
+**   Return      : None
+**   Description : It sets the Serial Interrupt
+**/
+ void setSerialinterrupt(void)
+ {
+	 sei();
+ }
+
+/*** Function    : ISR (This is routine)
+**   Parameters  : None
+**   Return      : None
+**   Description : It is ISR for UART Receive (It will trigger if any byte is received)
+**/
 ISR(USART_RXC_vect)
+{ 
+uartReadBuffer[uartReadCount++] = UDR;
+if(UDR == LF)
 {
-	 uartReadBuffer[uartReadCount] = UDR;
-	 if(uartReadBuffer[uartReadCount]  == TERMIN_LF || uartReadBuffer[uartReadCount]  == TERMIN_CR)
-	 {
-		 if(uartReadBuffer[uartReadCount]  == TERMIN_LF)
-		 {
-				 uartNewLineIndexes[uartNewLineCount] = uartReadCount;
-				 if(uartNewLineCount == uartNewLineCountMax)
-				 uartNewLineFlag = 1;
-				 else
-				 uartNewLineCount++;	 
-		 }
-		 uartLfCr++;
-	 }
-	 uartReadCount++;
+uartNewLineIndexes[uartNewLineCount] = uartReadCount;
+uartNewLineCount++;
+uartNewLineFlag = 1;
+}
 }
 
+/*** Function    : Serialflush
+**   Parameters  : None
+**   Return      : None
+**   Description : It clears the UART buffer,Index Buffer and Flags
+**/
 void Serialflush(void)
 {
 	    unsigned char i;
@@ -167,15 +174,9 @@ void Serialflush(void)
 		uartReadBuffer[i] = CHAR_NULL;
 }
 
- void enableSerialinterrupt(void)
- {
-	 sei();
- }
+
  
- void setNewline(volatile unsigned char count)
- {
-	 uartNewLineCountMax = count;
- }
+
 #endif
 
 /************************* EOF **************************************/

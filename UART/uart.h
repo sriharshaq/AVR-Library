@@ -1,53 +1,108 @@
+/***************************************************************************************************************
+    This file is part of Library for AVR.
+
+    Library for AVR is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Library for AVR is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Library for AVR.  If not, see <http://www.gnu.org/licenses/>.
+/**************************************************************************************************************/
+
+/***
+**   File       : uart.h
+**   Author     : Sriharsha
+**   Website    : www.zuna.in
+**   Email      : helpzuna@gmail.com
+**   Description: This is the include file for AVR uart driver
+***/
+
 #ifndef __uart_h__
 #define __uart_h__
 
-#define ENABLE_UART_RX_INTERRUT 1
-
-#define CHAR_NULL   '\0'
-#define TERMIN_LF   '\n'
-#define TERMIN_CR   '\r'
-
-#include <avr/io.h>
+#include <#include <avr/io.h> // AVR Peripheral Address preprocessor file
+#include <stdio.h>            // Standard input/output file used in Serialintwrite (sprintf)
 
 
-#ifdef ENABLE_UART_RX_INTERRUT
+// UART RX Interrupt (If not required comment below line)
+#define SERIAL_RX_INTERRUPT_ENABLE   1
+
+// UART Buffer Size
+#define UART_RX_BUFFER_SIZE          64
+
+// New Line Index Buffer Size
+#define NEW_LINE_INDEX_BUFFER_SIZE   10
+
+// If interrupt is enable
+#ifdef SERIAL_RX_INTERRUPT_ENABLE
 #include <avr/interrupt.h>
-
-#ifndef RECV_BUFFER_SIZE
-#define RECV_BUFFER_SIZE 64
-#warning "RECV_BUFFER_SIZE not defined, default '64' bytes allocated"
-#endif
-#if RECV_BUFFER_SIZE > 255
-#error "Invalid Buffer Size"
-#elif RECV_BUFFER_SIZE < 1
-#error "Invalid Buffer Size"
 #endif
 
-#define MAX_NL_INDEX 28
 
-extern volatile unsigned char uartNewLineFlag;
-extern volatile unsigned char uartReadBuffer[RECV_BUFFER_SIZE];
-extern volatile unsigned int  uartReadCount;
-extern volatile unsigned char uartNewLineCount;
-extern volatile unsigned char uartNewLineCountMax;
-extern volatile unsigned char uartNewLineIndexes[MAX_NL_INDEX];
-extern volatile unsigned char uartLfCr;
+// ASCII Code Definitions
+#define NUL 0x00                          // Null Character
+#define SOH 0x01                          // Start Of Heading
+#define STX 0x02                          // Start Of Text
+#define ETX 0x03                          // End Of Text
+#define EOT 0x04                          // End of Transmission
+#define ENQ 0x05                          // Enquiry
+#define ACK 0x06                          // Acknowledgement
+#define BEL 0x07                          // Bell
+#define BS  0x08                          // Back Space
+#define TAB 0x09                          // Horizontal TAB
+#define LF  0x0A                          // Line Feed (Newline)
+#define VT  0x0B                          // Vertical TAB
+#define NP  0x0C                          // New Page
+#define CR  0x0D                          // Carriage Return
+#define SO  0x0E                          // Shift OUT
+#define SI  0x0F                          // Shift IN
+#define DLE 0x10                          // Data Link Escape
+#define DC1 0x11                          // Device Control 1
+#define DC2 0x12                          // Device Control 2
+#define DC3 0x13                          // Device Control 3
+#define DC4 0x14                          // Device Control 4
+#define NAK 0x15                          // Negative Acknowledgement
+#define SYN 0x16                          // Synchronous Idle
+#define ETB 0x17                          // End of Trans. Block
+#define CAN 0x18                          // Cancel
+#define EM  0x19                          // End of Medium
+#define SUB 0x1A                          // Substitute
+#define ESC 0x1B                          // Escape
+#define FS  0x1C                          // File Seperator
+#define GS  0x1D                          // Group Seperator
+#define RS  0x1E                          // Record Seperator
+#define US  0x1F                          // Unit Seperator
 
-extern  void enableSerialinterrupt(void);
-extern  void setNewline(volatile unsigned char);
+#define CHAR_NULL  '\0'                   // Null charactor
 
-#endif
 
 /***************** Prototypes ****************************/
-extern void          Serialbegin(unsigned long);
-extern unsigned char Serialavailable(void);
-extern void          Serialwrite(unsigned char);
-extern void          Serialprint(unsigned char *);
-extern volatile unsigned char Serialread(void);
-extern void          SerialIntWrite(unsigned char num);
-extern void          SetOsc(unsigned long OscFreq);
+extern void           Serialbegin(unsigned long);
+extern unsigned char  Serialavailable(void);
+extern void           Serialwrite(unsigned char);
+extern void           Serialprint(unsigned char *);
+extern unsigned char  Serialread(void);
+extern void           SerialIntWrite(signed int);
+extern void           SetOsc(unsigned long);
+
+
+#ifdef SERIAL_RX_INTERRUPT_ENABLE
+extern void          setSerialinterrupt(void);
 extern void          Serialflush(void);
-/*********************************************************/
+
+extern volatile unsigned char          uartNewLineFlag;
+extern volatile unsigned char          uartReadBuffer[UART_RX_BUFFER_SIZE];
+extern volatile unsigned int           uartReadCount;
+extern volatile unsigned char          uartNewLineCount;
+extern volatile unsigned char          uartNewLineIndexes[NEW_LINE_INDEX_BUFFER_SIZE];
+#endif
+
 
 
 #endif
