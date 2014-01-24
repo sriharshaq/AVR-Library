@@ -46,22 +46,13 @@ unsigned long OscillatorFrequency = 1000000;
 
 #endif
 
-/*** Function    : SetOsc
-**   Parameters  : unsigned long (Oscillator Frequency in Hz)
-**   Return      : None
-**   Description : It will Set the Oscillator Frequency for Baud Rate Calculations
-**/
-void SetOsc(unsigned long OscFreq)
-{
-	OscillatorFrequency = OscFreq;
-}
 
 /*** Function    : Serialbegin
-**   Parameters  : unsigned long (Standard BaudRate)
+**   Parameters  : unsigned long(Oscillator Freq in Hz),unsigned long (Standard BaudRate)
 **   Return      : None
 **   Description : It will Set the baud rate for serial communication
 **/
-void Serialbegin(unsigned long baudRate)
+void Serialbegin(unsigned long OscillatorFrequency,unsigned long baudRate)
 {
 	unsigned long autoReloadvalue = (((OscillatorFrequency / (baudRate * 16))) - 1);
 	UBRRL = autoReloadvalue;

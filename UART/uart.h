@@ -83,14 +83,12 @@
 
 
 /***************** Prototypes ****************************/
-extern void           Serialbegin(unsigned long);
+extern void           Serialbegin(unsigned long,unsigned long);
 extern unsigned char  Serialavailable(void);
 extern void           Serialwrite(unsigned char);
 extern void           Serialprint(unsigned char *);
 extern unsigned char  Serialread(void);
 extern void           SerialIntWrite(signed int);
-extern void           SetOsc(unsigned long);
-
 
 #ifdef SERIAL_RX_INTERRUPT_ENABLE
 extern void          setSerialinterrupt(void);
