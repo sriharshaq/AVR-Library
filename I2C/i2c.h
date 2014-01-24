@@ -27,9 +27,14 @@
 #ifndef __i2c_h__
 #define __i2c_h__
 
+#include <math.h>
 
 #define I2C_MASTER_MODE 0
 #define I2C_SLAVE_MODE  1
+
+#define I2C_SPEED_REG TWBR
+
+#define I2C_SPEED_CALC(__OscFreq,__Speed,__PreScalar) ((OscFreq/__Speed) - 16 - (pow(4,__PreScalar)))
 
 /***************** Prototypes ******************************/
 extern void           i2cBegin(unsigned long,unsigned long);        // Oscillator Frequency in Hz, Speed in Hz

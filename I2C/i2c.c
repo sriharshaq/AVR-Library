@@ -22,22 +22,60 @@
 **   Author     : Sriharsha
 **   Website    : www.zuna.in
 **   Email      : helpzuna@gmail.com
-**   Description: This is the i2c driver for AVR family MCU's
+**   Description: This is the hardware i2c driver for AVR family MCU's
 ***/
 
 #include "i2c.h"
 
 
-/*** Function    : _time_out_timer_0__
-**   Parameters  : None
+/*** Function    : i2cBegin
+**   Parameters  : unsigned long (Osc Freq in Hz), unsigned long (Speed in Hz)
 **   Return      : None
-**   Description : It will give 25ms delay for I2C Detect Timeout
+**   Description : It will Initiate the I2C device speed
 **/
 void i2cBegin(unsigned long OscFreq,unsigned long Speed)
 {
-unsigned char preScalar = 2;
+unsigned char preScalar = 2; 
+I2C_SPEED_REG = I2C_SPEED_CALC(OscFreq,Speed,preScalar);
+}
+
+/*** Function    : i2cSetMode
+**   Parameters  : unsigned char (MODE)
+**   Return      : None
+**   Description : It will configure I2C Mode (Master/Slave)
+**/
+void i2cSetMode(unsigned char __Mode)
+{
+if(__Mode == I2C_MASTER_MODE)
+{
+// Configure Device as Master
+}
+else
+{
+// Configure Device as Slave
+}
+}
+
+/*** Function    : i2cDetect
+**   Parameters  : unsigned char (Device Address)
+**   Return      : 1 -> Detected, 0 -> Not Detected
+**   Description : It will configure I2C Mode (Master/Slave)
+**/
+unsigned char i2cDetect(unsigned char __DevAddress)
+{
 
 }
+
+/*** Function    : i2cavailable
+**   Parameters  : None
+**   Return      : 1 -> Available (Free), 0 -> Busy
+**   Description : It will check the status of i2c bus
+**/
+unsigned char i2cavailable(void)
+{
+
+}
+
 
 
 
