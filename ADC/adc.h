@@ -91,6 +91,13 @@
 
 #define ADC_RAW_TO_VOLTAGE(val)     val * (ADC_REF_VOLTAGE/ADC_RESOLUTION_VALUE)     
 
-int analogRead(int);
+#define ADC_PORT_DIRECTION_REGISTER DDRA
+
+
+extern int    analogRead(unsigned char);
+extern double analogReadVoltage(unsigned char);
+extern void   setPrescalar(unsigned char);
+extern void   analogReference(unsigned char);
+extern void   Adcbegin(void);
 
 #endif
