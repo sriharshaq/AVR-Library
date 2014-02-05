@@ -112,13 +112,27 @@ void Serialprint(unsigned char *sPtr)
 /*** Function    : SerialIntWrite
 **   Parameters  : unsigned char *
 **   Return      : None
-**   Description : It will send the string to UART
+**   Description : It will write integer on uart
 **/
-void SerialIntWrite(signed int num)
+void SerialIntWrite(signed int num,unsigned char __RADIX)
 {
-char *tempBuffer;
-sprintf(tempBuffer,"%d",num);
-Serialprint((unsigned char*)tempBuffer);
+char __buffer[20];
+itoa(num,__buffer,__RADIX);
+Serialprint(__buffer);
+}
+
+
+/*** Function    : SerialDoubleWrite
+**   Parameters  : double,unsigned char 
+**   Return      : None
+**   Description : It will write double on uart
+**/
+void SerialDoubleWrite(double __f,unsigned char __dec)
+{
+char __buffer[20];
+char *__bPtr;
+__bPtr = dtostrf(__f,10,2,__buffer);
+Serialprint(__bPtr);
 }
 
 #ifdef SERIAL_RX_INTERRUPT_ENABLE

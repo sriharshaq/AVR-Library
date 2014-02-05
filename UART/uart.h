@@ -82,13 +82,21 @@
 #define CHAR_NULL  '\0'                   // Null charactor
 
 
+// Radix for Serial Integer Print
+#define HEX 16
+#define DEC 10
+#define OCT 8
+#define BIN 2
+
+
+
 /***************** Prototypes ****************************/
 extern void           Serialbegin(unsigned long,unsigned long);
 extern unsigned char  Serialavailable(void);
 extern void           Serialwrite(unsigned char);
 extern void           Serialprint(unsigned char *);
 extern unsigned char  Serialread(void);
-extern void           SerialIntWrite(signed int);
+extern void           SerialIntWrite(signed int,unsigned char);
 
 #ifdef SERIAL_RX_INTERRUPT_ENABLE
 extern void          setSerialinterrupt(void);
