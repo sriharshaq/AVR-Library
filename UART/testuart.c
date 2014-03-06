@@ -38,8 +38,8 @@ const unsigned long OSC_FREQ = 16000000;
 **/
 int main(void)
 {
-SetOsc(OSC_FREQ);             // Set Oscillator Freq
-Serialbegin(BAUD_RATE);       // Set Baud Rate
+//SetOsc(OSC_FREQ);             // Set Oscillator Freq
+Serialbegin(OSC_FREQ,BAUD_RATE);       // Set Baud Rate
 Serialflush();                // Clear the buffers
 Serialprint("uart test\n\r"); // Print a string
 setSerialinterrupt();         // Enable Serial Interrupt

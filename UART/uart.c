@@ -154,12 +154,13 @@ Serialprint(__bPtr);
 **/
 ISR(USART_RXC_vect)
 { 
-uartReadBuffer[uartReadCount++] = UDR;
-if(UDR == LF)
+volatile char temp = UDR;
+uartReadBuffer[uartReadCount++] = temp;
+if(temp == LF)
 {
+uartNewLineFlag = 1;
 uartNewLineIndexes[uartNewLineCount] = uartReadCount;
 uartNewLineCount++;
-uartNewLineFlag = 1;
 }
 }
 
@@ -175,7 +176,7 @@ void Serialflush(void)
 		uartNewLineFlag = 0;
 		uartReadCount = 0;
 		uartLfCr = 0;
-		for(i=0;i<RECV_BUFFER_SIZE;i++)
+		for(i=0;i<UART_RX_BUFFER_SIZE;i++)
 		uartReadBuffer[i] = CHAR_NULL;
 }
 
