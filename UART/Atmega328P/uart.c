@@ -36,7 +36,7 @@ unsigned long OscillatorFrequency = 1000000;
 // Uart New Line Flag (Set when new line received)
  volatile unsigned char uartNewLineFlag = 0;
 // UART Read Buffer to store Received Data
- volatile unsigned char uartReadBuffer[UART_RX_BUFFER_SIZE];
+ volatile char uartReadBuffer[UART_RX_BUFFER_SIZE];
 // Uart Byte Count
  volatile unsigned int  uartReadCount    = 0;
 // Uart New Line Count
@@ -80,7 +80,7 @@ unsigned char Serialavailable(void)
 **   Return      : None
 **   Description : It will write single character to UART
 **/
-void Serialwrite(unsigned char Byte)
+void Serialwrite(char Byte)
 {
  while((UCSR0A &(1<<UDRE0)) == 0);
  // Transmit data
@@ -92,7 +92,7 @@ void Serialwrite(unsigned char Byte)
 **   Return      : unsigned char
 **   Description : It will read single byte from uart
 **/
-volatile unsigned char Serialread(void)
+char Serialread(void)
 {
 	 while((UCSR0A &(1<<RXC0)) == 0);
 	 return UDR0;
@@ -103,7 +103,7 @@ volatile unsigned char Serialread(void)
 **   Return      : None
 **   Description : It will send the string to UART
 **/
-void Serialprint(unsigned char *sPtr)
+void Serialprint(char *sPtr)
 {
 	for(;*sPtr!='\0';Serialwrite(*(sPtr++)));
 }

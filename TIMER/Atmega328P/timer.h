@@ -27,10 +27,11 @@
 #define __timer_h__
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
-#define ENABLE_TIMER0_COUNT
-#define ENABLE_TIMER1_COUNT
-#define ENABLE_TIMER2_COUNT
+#define ENABLE_TIMER0_ISR
+//#define ENABLE_TIMER1_ISR
+//#define ENABLE_TIMER2_ISR
 
 #define HW_TIMER0 0
 #define HW_TIMER1 1

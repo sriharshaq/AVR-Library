@@ -27,7 +27,7 @@
 #define __uart_h__
 
 #include <avr/io.h> // AVR Peripheral Address preprocessor file
-#include <stdio.h>            // Standard input/output file used in Serialintwrite (sprintf)
+#include <stdlib.h>
 
 
 // UART RX Interrupt (If not required comment below line)
@@ -93,9 +93,9 @@
 /***************** Prototypes ****************************/
 extern void           Serialbegin(unsigned long,unsigned long);
 extern unsigned char  Serialavailable(void);
-extern void           Serialwrite(unsigned char);
-extern void           Serialprint(unsigned char *);
-extern unsigned char  Serialread(void);
+extern void           Serialwrite(char);
+extern void           Serialprint(char *);
+extern char           Serialread(void);
 extern void           SerialIntWrite(signed int,unsigned char);
 
 #ifdef SERIAL_RX_INTERRUPT_ENABLE
@@ -103,7 +103,7 @@ extern void          setSerialinterrupt(void);
 extern void          Serialflush(void);
 
 extern volatile unsigned char          uartNewLineFlag;
-extern volatile unsigned char          uartReadBuffer[UART_RX_BUFFER_SIZE];
+extern volatile char                   uartReadBuffer[UART_RX_BUFFER_SIZE];
 extern volatile unsigned int           uartReadCount;
 extern volatile unsigned char          uartNewLineCount;
 extern volatile unsigned char          uartNewLineIndexes[NEW_LINE_INDEX_BUFFER_SIZE];
