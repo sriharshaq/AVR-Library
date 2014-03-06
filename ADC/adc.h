@@ -29,7 +29,7 @@
 #define __adc_h__
 
 #include <avr/io.h>
-#include <avr/interrupts.h>
+#include <avr/interrupt.h>
 
 
 //#define ENABLE_ADC_INTERRUPT
@@ -37,7 +37,7 @@
 // Reference Voltage Settings
 #define VREF_EXT_AREF 0x00    // External Ref Voltage at Aref Pin
 #define VREF_EXT_AVCC 0x40    // External Ref Voltage at AVCC Pin with Capacitor
-#define VREF_INT_256  0xE0    // Internal 2.56V Reference
+#define VREF_INT_256  0xC0    // Internal 2.56V Reference
 
 // Analog Channels
 #define ADC_MUX_CH0   0x00
@@ -50,7 +50,7 @@
 #define ADC_MUX_CH7   0x07
 
 
-#define VrefMilliVolts     5   
+#define VrefMilliVolts     2.56
 #define Vref               (VrefMilliVolts * 1000)    
 
 #define EXTERNAL_AREF 0
@@ -60,10 +60,10 @@
 #define ADC_MUX_REGISTER             ADMUX
 #define ADC_STATUS_CONTROL_REGISTER  ADCSRA
 
-#define ADC_ENABLE                  ADC_STATUS_CONTROL_REGISTER |=  _BV(7)
+#define ADC_ENABLE                  ADC_STATUS_CONTROL_REGISTER |=  _BV(7) 
 #define ADC_DISABLE                 ADC_STATUS_CONTROL_REGISTER &= ~_BV(7)
 
-#define ADC_START_CONVERSION        ADC_STATUS_CONTROL_REGISTER |=  _BV(6)
+#define ADC_START_CONVERSION        ADC_STATUS_CONTROL_REGISTER |= _BV(6)
 #define ADC_STOP_CONVERSION         ADC_STATUS_CONTROL_REGISTER &= ~_BV(6)
 
 #define ADC_AUTO_TRIGGER_ENABLE     ADC_STATUS_CONTROL_REGISTER |=  _BV(5)
@@ -83,7 +83,7 @@
 #define ADC_PRESCALAR_64            ADC_STATUS_CONTROL_REGISTER |= _BV(1) | _BV(2)
 #define ADC_PRESCALAR_128           ADC_STATUS_CONTROL_REGISTER |= _BV(0) | _BV(1) | _BV(2)
 
-#define ADC_CONVERSION_COMPLETE     ADC_STATUS_CONTROL_REGISTER & _BV(7)
+#define ADC_CONVERSION_COMPLETE     ADC_STATUS_CONTROL_REGISTER & _BV(4)
 
 #define ADC_REF_VOLTAGE             2.56
 

@@ -32,19 +32,27 @@
 volatile int adcReadval = 0;
 #endif
 
-
-int analogRead(int MuxCh)
+void Adcbegin(void)
 {
+	ADC_PORT_DIRECTION_REGISTER = 0x00;
+	ADC_ENABLE;
+	ADC_START_CONVERSION;
+	ADC_INTERRUPT_DISABLE;
+}
+
+int analogRead(unsigned char MuxCh)
+{
+ADC_MUX_REGISTER &= 0xF0; // mask only for 4-bits (Issue)
 ADC_MUX_REGISTER |= MuxCh;
 ADC_START_CONVERSION;
 #ifndef ENABLE_ADC_INTERRUPT
-while(ADC_CONVERSION_COMPLETE);
+while(~ADC_CONVERSION_COMPLETE);
 ADC_STOP_CONVERSION;
 return ADC;
 #endif
 }
 
-double analogReadVoltage(int MuxCh)
+double analogReadVoltage(unsigned char MuxCh)
 {
 double _val = ADC_RAW_TO_VOLTAGE(analogRead(MuxCh));
 return _val;
@@ -56,17 +64,17 @@ void analogReference(unsigned char ref)
 if(ref == EXTERNAL_AREF)
 ADC_MUX_REGISTER |= VREF_EXT_AREF;
 // External Avcc (Capacitor should connect)
-else if(ref == VREF_EXT_AVCC)
+else if(ref == EXTERNAL_AVCC)
 ADC_MUX_REGISTER |= VREF_EXT_AVCC;
 // Internal 2.56
-else if(ref == VREF_INT_256)
+else if(ref == INTERNAL256)
 ADC_MUX_REGISTER |= VREF_INT_256;
 }
 
 void setPrescalar(unsigned char __preScalarVal)
 {
 // Clear Mux Prescalar Register
-ADC_PRESCALAR_CLEAR;
+//ADC_PRESCALAR_CLEAR;
 switch(__preScalarVal)
 {
 case 2  :   ADC_PRESCALAR_2;
