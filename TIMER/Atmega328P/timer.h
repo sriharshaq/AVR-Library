@@ -26,33 +26,51 @@
 #ifndef __timer_h__
 #define __timer_h__
 
+#include <avr/io.h>
+
 #define ENABLE_TIMER0_COUNT
 #define ENABLE_TIMER1_COUNT
 #define ENABLE_TIMER2_COUNT
-#define ENABLE_TIMER3_COUNT
-#define ENABLE_TIMER4_COUNT
 
 #define HW_TIMER0 0
 #define HW_TIMER1 1
-#define HW_TIMER2 1
-#define HW_TIMER3 1
+#define HW_TIMER2 2
 
-#ifdef ENABLE_TIMER0_COUNT
+#ifdef ENABLE_TIMER0_ISR
 extern volatile unsigned int timerCount0;
 #endif
-#ifdef ENABLE_TIMER1_COUNT
+#ifdef ENABLE_TIMER1_ISR
 extern volatile unsigned int timerCount1;
 #endif
-#ifdef ENABLE_TIMER2_COUNT
+#ifdef ENABLE_TIMER2_ISR
 extern volatile unsigned int timerCount2;
 #endif
-#ifdef ENABLE_TIMER3_COUNT
-extern volatile unsigned int timerCount3;
-#endif
+
+
+#define TIMER_NO_CLOCK_SOURCE   TCCR0B &= ~(1 << CS02) | ~(1 << CS01) | ~(1 << CS00)                             // 000
+#define TIMER_NO_PRESCALAR      TCCR0B |= (TCCR0B & ~(1 << CS02)) | (TCCR0B & ~(1 << CS01)) | (1 << CS00)        // 001
+#define TIMER_8_PRESCALAR       TCCR0B |= (TCCR0B & ~(1 << CS02)) | (1 << CS01) | (TCCR0B & ~(1 << CS00)         // 010
+#define TIMER_64_PRESCALAR      TCCR0B |= (TCCR0B & ~(1 << CS02)) | (1 << CS01) | (1 << CS00)                    // 011
+#define TIMER_256_PRESCALAR     TCCR0B |= (1 << CS02) | (TCCR0B & ~(1 << CS01))| (TCCR0B & ~(1 << CS00))         // 100
+#define TIMER_1024_PRESCALAR    TCCR0B |= (1 << CS02) | (TCCR0B & ~(1 << CS01))| (1 << CS00)                     // 101
+
+// External clock is pending
+
+#define DEFAULT_TIMER_PRESCALAR TIMER_256_PRESCALAR
+
+#define TIMER_DIV 256
 
 // Prototypes
 extern void timerBegin(unsigned long,unsigned long,unsigned char);
 extern void timerStart(unsigned char);
 extern void timerStop(unsigned char);
+extern void timerClearCount(unsigned char);
+extern void timerEnableInterrupt(unsigned char);
+extern void timerDisableInterrupt(unsigned char);
+
+
+#ifdef ENABLE_TIMER1_ISR
+#warning "Timer1 is 16-bit development is pending use 0 and 2 8 bit"
+#endif
 
 #endif

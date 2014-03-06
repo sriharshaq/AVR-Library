@@ -27,17 +27,14 @@
 
 
 // Globals
-#ifdef ENABLE_TIMER0_COUNT
+#ifdef ENABLE_TIMER0_ISR
 volatile unsigned int timerCount0 = 0;
 #endif
-#ifdef ENABLE_TIMER1_COUNT
+#ifdef ENABLE_TIMER1_ISR
 volatile unsigned int timerCount1 = 0;
 #endif
-#ifdef ENABLE_TIMER2_COUNT
+#ifdef ENABLE_TIMER2_ISR
 volatile unsigned int timerCount2 = 0;
-#endif
-#ifdef ENABLE_TIMER3_COUNT
-volatile unsigned int timerCount3 = 0;
 #endif
 
 /*** Function    : timerBegin
@@ -47,6 +44,23 @@ volatile unsigned int timerCount3 = 0;
 **/
 void timerBegin(unsigned long __OscFreq,unsigned long timeuSec,unsigned char TimerNo)
 {
+	unsigned char reloadVal;
+	reloadVal = (timeuSec / (__OscFreq / TIMER_DIV)) - 1;
+// Normal Mode
+	TCCR0A &= ~(1 << WGM00) | ~(1 << WGM01);
+	TCCR0B &= ~(1 << WGM02);
+
+// Prescalar
+DEFAULT_TIMER_PRESCALAR;
+
+if(TimerNo == HW_TIMER0)
+{
+TCNT0 = reloadVal;
+}
+else if(TimerNo == HW_TIMER2)
+{
+TCNT2 = reloadVal;
+}
 
 }
 
@@ -77,8 +91,73 @@ void timerStop(unsigned char TimerNo)
 **/
 void timerClearCount(unsigned char TimerNo)
 {
+	#ifdef ENABLE_TIMER0_ISR
+	if(TimerNo == HW_TIMER0)
+	timerCount0 = 0;
+	#endif
+	#ifdef ENABLE_TIMER1_ISR
+	if(TimerNo == HW_TIMER1)
+	timerCount1 = 0;
+	#endif
+	#ifdef ENABLE_TIMER2_ISR
+	if(TimerNo == HW_TIMER2)
+	timerCount2 = 0;
+	#endif
 }
 
+void timerEnableInterrupt(unsigned char TimerNo)
+{
+	if(TimerNo == HW_TIMER0)
+	{
+	TIMSK0 |= 1 << TOIE0;
+	}
+	else if(TimerNo == HW_TIMER1)
+	{
+	TIMSK1 |= 1 << TOIE1;		
+	}
+	else if(TimerNo == HW_TIMER2)
+	{
+	TIMSK2 |= 1 << TOIE2;	
+	}
+	
+	// Enable Global Interrupts
+	sei();
+}
 
+void timerDisableInterrupt(unsigned char TimerNo)
+{
+	if(TimerNo == HW_TIMER0)
+	{
+		TIMSK0 &= ~(1 << TOIE0);
+	}
+	else if(TimerNo == HW_TIMER1)
+	{
+		TIMSK1 &= ~(1 << TOIE1);
+	}
+	else if(TimerNo == HW_TIMER2)
+	{
+		TIMSK2 &= ~(1 << TOIE2);
+	}
+}
 
 // ISR
+#ifdef ENABLE_TIMER0_ISR
+ISR(TIMER0_OVF_vect) 
+{
+	timerCount0++;
+}
+#endif
+
+#ifdef ENABLE_TIMER1_ISR
+ISR(TIMER1_OVF_vect)
+{
+	timerCount1++;
+}
+#endif
+
+#ifdef ENABLE_TIMER2_ISR
+ISR(TIMER1_OVF_vect)
+{
+	timerCount2++;
+}
+#endif
