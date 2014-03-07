@@ -47,8 +47,8 @@ void timerBegin(unsigned long __OscFreq,unsigned long timeuSec,unsigned char Tim
 	unsigned char reloadVal;
 	reloadVal = (timeuSec / (__OscFreq / TIMER_DIV)) - 1;
 // Normal Mode
-	TCCR0A &= ~(1 << WGM00) | ~(1 << WGM01);
-	TCCR0B &= ~(1 << WGM02);
+//	TCCR0A &= ~(1 << WGM00) | ~(1 << WGM01);
+//	TCCR0B &= ~(1 << WGM02);
 
 // Prescalar
 DEFAULT_TIMER_PRESCALAR;

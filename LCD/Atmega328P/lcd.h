@@ -39,7 +39,7 @@
 //#define LCD_RW_ENABLED 1
 
 // LCD Type (16x2,20x4)
-#define _LCD_TYPE_ 1                   // 1 -> 20x2 , 2-> 16x2
+#define _LCD_TYPE_ 2                   // 1 -> 20x2 , 2-> 16x2
 #define LCD_MODE   2                   // 1-> 8-bit Mode,2-> 4-Bit Mode
 
 // LCD Pin definitions

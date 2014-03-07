@@ -57,9 +57,9 @@ extern volatile unsigned int timerCount2;
 
 // External clock is pending
 
-#define DEFAULT_TIMER_PRESCALAR TIMER_256_PRESCALAR
+#define DEFAULT_TIMER_PRESCALAR TIMER_1024_PRESCALAR
 
-#define TIMER_DIV 256
+#define TIMER_DIV 1024
 
 // Prototypes
 extern void timerBegin(unsigned long,unsigned long,unsigned char);
