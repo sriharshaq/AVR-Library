@@ -28,12 +28,13 @@
 #define __lcd_h__
 
 #ifndef F_CPU
-#define F_CPU 8000000UL           // Clock Frequency is 8 Mhz
+#define F_CPU 16000000UL           // Clock Frequency is 8 Mhz
 #endif
 
 #include <avr/io.h>               // Peripheral Address
 #include <util/delay.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // If you are using R/W Pin
 //#define LCD_RW_ENABLED 1
@@ -153,5 +154,6 @@ extern void lcd_port_init(void);
 extern void lcdwrite4Bits(unsigned char);
 extern void lcdwrite8Bits(unsigned char);
 extern void lcdSendbyte(unsigned char);
+extern void lcdWriteintU(unsigned int);
 
 #endif

@@ -318,15 +318,27 @@ void lcdBegin(void)
 }
 
 /*** Function    : lcdWriteint
-**   Parameters  : None
+**   Parameters  : input signed int
 **   Return      : None
-**   Description : It will initiate the lcd
+**   Description : It will print signed int in lcd
 **/
 void lcdWriteint(signed int num)
 {
-char *tempBuffer;
-sprintf(tempBuffer,"%d",num);
-lcdPrint((unsigned char*)tempBuffer);
+char __buffer[20];
+itoa(num,__buffer,10);
+lcdPrint(__buffer);
+}
+
+/*** Function    : lcdWriteint
+**   Parameters  : input unsigned int
+**   Return      : None
+**   Description : It will print unsigned int in lcd
+**/
+void lcdWriteintU(unsigned int num)
+{
+	char __buffer[20];
+	itoa(num,__buffer,10);
+	lcdPrint(__buffer);
 }
 
 
