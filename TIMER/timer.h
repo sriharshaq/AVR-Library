@@ -26,6 +26,9 @@
 #ifndef __timer_h__
 #define __timer_h__
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
 #define ENABLE_TIMER0_COUNT
 #define ENABLE_TIMER1_COUNT
 #define ENABLE_TIMER2_COUNT
@@ -49,6 +52,29 @@ extern volatile unsigned int timerCount2;
 #ifdef ENABLE_TIMER3_COUNT
 extern volatile unsigned int timerCount3;
 #endif
+
+#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
+#define TIMER_NO_CLOCK_SOURCE   TCCR0 &= ~(1 << CS02) | ~(1 << CS01) | ~(1 << CS00)                           // 000
+#define TIMER_NO_PRESCALAR      TCCR0 |= (TCCR0 & ~(1 << CS02)) | (TCCR0 & ~(1 << CS01)) | (1 << CS00)        // 001
+#define TIMER_8_PRESCALAR       TCCR0 |= (TCCR0 & ~(1 << CS02)) | (1 << CS01) | (TCCR0 & ~(1 << CS00)         // 010
+#define TIMER_64_PRESCALAR      TCCR0 |= (TCCR0 & ~(1 << CS02)) | (1 << CS01) | (1 << CS00)                   // 011
+#define TIMER_256_PRESCALAR     TCCR0 |= (1 << CS02) | (TCCR0 & ~(1 << CS01))| (TCCR0 & ~(1 << CS00))         // 100
+#define TIMER_1024_PRESCALAR    TCCR0 |= (1 << CS02) | (TCCR0 & ~(1 << CS01))| (1 << CS00)                    // 101
+
+#elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+#define TIMER_NO_CLOCK_SOURCE   TCCR0B &= ~(1 << CS02) | ~(1 << CS01) | ~(1 << CS00)                             // 000
+#define TIMER_NO_PRESCALAR      TCCR0B |= (TCCR0B & ~(1 << CS02)) | (TCCR0B & ~(1 << CS01)) | (1 << CS00)        // 001
+#define TIMER_8_PRESCALAR       TCCR0B |= (TCCR0B & ~(1 << CS02)) | (1 << CS01) | (TCCR0B & ~(1 << CS00)         // 010
+#define TIMER_64_PRESCALAR      TCCR0B |= (TCCR0B & ~(1 << CS02)) | (1 << CS01) | (1 << CS00)                    // 011
+#define TIMER_256_PRESCALAR     TCCR0B |= (1 << CS02) | (TCCR0B & ~(1 << CS01))| (TCCR0B & ~(1 << CS00))         // 100
+#define TIMER_1024_PRESCALAR    TCCR0B |= (1 << CS02) | (TCCR0B & ~(1 << CS01))| (1 << CS00)                     // 101
+#endif
+
+// External clock is pending
+
+#define DEFAULT_TIMER_PRESCALAR TIMER_1024_PRESCALAR
+
+#define TIMER_DIV 1024
 
 // Prototypes
 extern void timerBegin(unsigned long,unsigned long,unsigned char);

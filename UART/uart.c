@@ -55,10 +55,20 @@ unsigned long OscillatorFrequency = 1000000;
 void Serialbegin(unsigned long OscillatorFrequency,unsigned long baudRate)
 {
 	unsigned long autoReloadvalue = (((OscillatorFrequency / (baudRate * 16))) - 1);
+	
+	#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
 	UBRRL = autoReloadvalue;
 	UBRRH = autoReloadvalue >> 8;
 	UCSRB = ((1<<TXEN)|(1<<RXEN)) | (1<<RXCIE);
-    UCSRC = (1 << URSEL) | (1 << UCSZ0) | (1 << UCSZ1); 
+	UCSRC = (1 << URSEL) | (1 << UCSZ0) | (1 << UCSZ1);
+	#elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+	UBRR0L = autoReloadvalue;
+	UBRR0H = autoReloadvalue >> 8;
+	UCSR0B = ((1<<TXEN0)|(1<<RXEN0)) | (1<<RXCIE0);
+    UCSR0C = ((1<<UCSZ00)|(1<<UCSZ01));
+	#endif
+	
+
 }
 
 /*** Function    : Serialavailable
@@ -68,10 +78,13 @@ void Serialbegin(unsigned long OscillatorFrequency,unsigned long baudRate)
 **/
 unsigned char Serialavailable(void)
 {
-	if((UCSRA &(1<<RXC)) == 1)
-	return 1;
-	else
-	return 0;
+	unsigned char status = 0;
+	#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
+	status = (UCSRA) & (1<<RXC);
+	#elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+	status = (UCSR0A) & (1<<RXC0);
+	#endif
+    return status;
 }
 
 
@@ -80,11 +93,15 @@ unsigned char Serialavailable(void)
 **   Return      : None
 **   Description : It will write single character to UART
 **/
-void Serialwrite(unsigned char Byte)
+void Serialwrite(char Byte)
 {
+#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
  while((UCSRA &(1<<UDRE)) == 0);
- // Transmit data
  UDR = Byte;
+ #elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+ while((UCSR0A &(1<<UDRE0)) == 0);
+ UDR0 = Byte;
+ #endif
 }
 
 /*** Function    : Serialread
@@ -92,10 +109,17 @@ void Serialwrite(unsigned char Byte)
 **   Return      : unsigned char
 **   Description : It will read single byte from uart
 **/
-volatile unsigned char Serialread(void)
+char Serialread(void)
 {
+	 char temp; 
+	 #if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
 	 while((UCSRA &(1<<RXC)) == 0);
-	 return UDR;
+	 temp = UDR;
+	 #elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+	 while((UCSR0A &(1<<RXC0)) == 0);
+	 temp = UDR0;
+	 #endif
+	 return temp;
 }
 
 /*** Function    : Serialprint
@@ -103,7 +127,7 @@ volatile unsigned char Serialread(void)
 **   Return      : None
 **   Description : It will send the string to UART
 **/
-void Serialprint(unsigned char *sPtr)
+void Serialprint(char *sPtr)
 {
 	for(;*sPtr!='\0';Serialwrite(*(sPtr++)));
 }
@@ -152,9 +176,20 @@ Serialprint(__bPtr);
 **   Return      : None
 **   Description : It is ISR for UART Receive (It will trigger if any byte is received)
 **/
+#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
 ISR(USART_RXC_vect)
+#elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+ISR(USART_RX_vect)
+#endif
 { 
-volatile char temp = UDR;
+volatile char temp;
+#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__)
+temp = UDR;
+#elif defined (__AVR_ATmega328__) || (__AVR_ATmega328P__) 
+temp = UDR0;
+#elif defined (	__AVR_ATmega8__)
+temp = UDR;
+#endif
 uartReadBuffer[uartReadCount++] = temp;
 if(temp == LF)
 {
@@ -175,7 +210,6 @@ void Serialflush(void)
 		uartNewLineCount = 0;
 		uartNewLineFlag = 0;
 		uartReadCount = 0;
-		uartLfCr = 0;
 		for(i=0;i<UART_RX_BUFFER_SIZE;i++)
 		uartReadBuffer[i] = CHAR_NULL;
 }

@@ -41,12 +41,12 @@ int main(void)
 //SetOsc(OSC_FREQ);             // Set Oscillator Freq
 Serialbegin(OSC_FREQ,BAUD_RATE);       // Set Baud Rate
 Serialflush();                // Clear the buffers
-Serialprint("uart test\n\r"); // Print a string
+Serialprint("UART test\n\r"); // Print a string
 setSerialinterrupt();         // Enable Serial Interrupt
 while(1)
 {
  while(uartNewLineCount<NEW_LINE_THRESHOLD); // Wait until new line count reaches threshold
- Serialprint(uartReadBuffer);                // Print the uart read buffer
+ Serialprint((char*)uartReadBuffer);                // Print the uart read buffer
  Serialflush();                              // Flush the buffer
 }
 }
