@@ -28,7 +28,7 @@
 const unsigned long OSC_FREQ = 16000000;
 #define BAUD_RATE              9600
 
-#define NEW_LINE_THRESHOLD  3
+#define NEW_LINE_THRESHOLD  1
 
 
 /*** Function    : main
@@ -41,12 +41,12 @@ int main(void)
 //SetOsc(OSC_FREQ);             // Set Oscillator Freq
 Serialbegin(OSC_FREQ,BAUD_RATE);       // Set Baud Rate
 Serialflush();                // Clear the buffers
-Serialprint("UART test\n\r"); // Print a string
+Serialprint("uart test\n\r"); // Print a string
 setSerialinterrupt();         // Enable Serial Interrupt
 while(1)
 {
- while(uartNewLineCount<NEW_LINE_THRESHOLD); // Wait until new line count reaches threshold
- Serialprint((char*)uartReadBuffer);                // Print the uart read buffer
+ while(uartNewLineFlag == 0); // Wait until new line count reaches threshold
+ Serialprint(uartReadBuffer);                // Print the uart read buffer
  Serialflush();                              // Flush the buffer
 }
 }

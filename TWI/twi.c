@@ -15,38 +15,58 @@
     along with Library for AVR.  If not, see <http://www.gnu.org/licenses/>.
 /**************************************************************************************************************/
 
+
+
 /***
-**   File       : testuart.c
+**   File       : twi.c
 **   Author     : Sriharsha
 **   Website    : www.zuna.in
 **   Email      : helpzuna@gmail.com
-**   Description: This is the test code for AVR uart driver
+**   Description: This is the hardware two wire  driver for AVR family MCU's
 ***/
 
-#include "uart.h"
+#include "twi.h"
 
-const unsigned long OSC_FREQ = 16000000;
-#define BAUD_RATE              9600
+volatile unsigned char DeviceAddress = 0;
 
-#define NEW_LINE_THRESHOLD  3
-
-
-/*** Function    : main
-**   Parameters  : None
-**   Return      : int
-**   Description : It is the entry point of program
+/*** Function    : twiSetspeed
+**   Parameters  : unsigned long (Osc Freq in Hz), unsigned long (Speed in Hz)
+**   Return      : None
+**   Description : It will set the speed of the two wire module
 **/
-int main(void)
+void twiSetspeed(unsigned long OscFreq,unsigned long Speed)
 {
-//SetOsc(OSC_FREQ);             // Set Oscillator Freq
-Serialbegin(OSC_FREQ,BAUD_RATE);       // Set Baud Rate
-Serialflush();                // Clear the buffers
-Serialprint("UART test\n\r"); // Print a string
-setSerialinterrupt();         // Enable Serial Interrupt
-while(1)
+TWI_REG_SPEED = TWI_REG_SPEED(OscFreq,Speed,TWI_DEFAULT_PRESCALE);
+}
+
+void twiStart(void)
 {
- while(uartNewLineCount<NEW_LINE_THRESHOLD); // Wait until new line count reaches threshold
- Serialprint((char*)uartReadBuffer);                // Print the uart read buffer
- Serialflush();                              // Flush the buffer
+ TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+ while ((TWCR & (1<<TWINT)) == 0);
 }
+
+void twiStop(void)
+{
+ TWCR = (1<<TWINT)|(1<<TWSTO)|(1<<TWEN);
 }
+
+/*** Function    : twiBegin
+**   Parameters  : unsigned char (Device Address)
+**   Return      : None
+**   Description : It will set the address of Two Wire Interface
+**/
+void twiBegin(unsigned char __Address)
+{
+DeviceAddress = __Address;
+}
+
+char twiReadByte(void)
+{
+ TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
+ while ((TWCR & (1<<TWINT)) == 0);
+ return TWDR;
+ }
+
+
+
+
