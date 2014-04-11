@@ -111,9 +111,6 @@ void Serialwrite(char Byte)
 **/
 char Serialread(void)
 {
-<<<<<<< HEAD
-
-=======
 	 char temp; 
 	 #if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__) || (__AVR_ATmega8__)
 	 while((UCSRA &(1<<RXC)) == 0);
@@ -123,7 +120,6 @@ char Serialread(void)
 	 temp = UDR0;
 	 #endif
 	 return temp;
->>>>>>> 0bcf17da1ed5c1b21c65905b0c74b1070afaf115
 }
 
 /*** Function    : Serialprint
@@ -186,10 +182,6 @@ ISR(USART_RXC_vect)
 ISR(USART_RX_vect)
 #endif
 { 
-<<<<<<< HEAD
-char temp;
-temp = UDR;
-=======
 volatile char temp;
 #if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__)
 temp = UDR;
@@ -198,7 +190,6 @@ temp = UDR0;
 #elif defined (	__AVR_ATmega8__)
 temp = UDR;
 #endif
->>>>>>> 0bcf17da1ed5c1b21c65905b0c74b1070afaf115
 uartReadBuffer[uartReadCount++] = temp;
 if(temp == LF)
 {
