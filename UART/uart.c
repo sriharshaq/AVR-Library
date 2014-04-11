@@ -94,8 +94,7 @@ void Serialwrite(unsigned char Byte)
 **/
 volatile unsigned char Serialread(void)
 {
-	 while((UCSRA &(1<<RXC)) == 0);
-	 return UDR;
+
 }
 
 /*** Function    : Serialprint
@@ -154,8 +153,10 @@ Serialprint(__bPtr);
 **/
 ISR(USART_RXC_vect)
 { 
-uartReadBuffer[uartReadCount++] = UDR;
-if(UDR == LF)
+char temp;
+temp = UDR;
+uartReadBuffer[uartReadCount++] = temp;
+if(temp == LF)
 {
 uartNewLineIndexes[uartNewLineCount] = uartReadCount;
 uartNewLineCount++;
