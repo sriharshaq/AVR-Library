@@ -91,7 +91,12 @@
 
 #define ADC_RAW_TO_VOLTAGE(val)     val * (ADC_REF_VOLTAGE/ADC_RESOLUTION_VALUE)     
 
+#if defined (__AVR_ATmega16U2__ ) || (__AVR_ATmega32U2__)
 #define ADC_PORT_DIRECTION_REGISTER DDRA
+#elif defined (__AVR_ATmega8__) || (__AVR_ATmega328__) || (__AVR_ATmega328P__)
+#define ADC_PORT_DIRECTION_REGISTER DDRC
+#endif
+
 
 
 extern int    analogRead(unsigned char);
